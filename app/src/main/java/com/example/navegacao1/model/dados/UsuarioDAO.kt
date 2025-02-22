@@ -35,13 +35,41 @@ class UsuarioDAO {
             }
     }
 
-    fun buscarPorId(id: String, callback: (Usuario) -> Unit) {
-        //TODO implemente buscar por Id
+    fun buscarPorId(id: String, callback: (Usuario?) -> Unit) {
+        // Busca o documento pelo id
+        db.collection("usuarios").document(id).get()
+            .addOnSuccessListener { document ->
+                // Se o documento existir, converte para um objeto Usuario
+                if (document.exists()) {
+                    val usuario = document.toObject<Usuario>()
+                    callback(usuario)
+                // Se o documento não existir, retorna null
+                } else {
+                    callback(null)
+                }
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
     }
 
 
-    fun adicionar(usuario: Usuario, callback: (Usuario) -> Unit) {
-        //TODO implemente adicionar
+    fun adicionar(usuario: Usuario, callback: (Usuario?) -> Unit) {
+        // Cria um novo documento, (id é gerado automaticamente pelo Firestore)
+        db.collection("usuarios").add(usuario)
+            .addOnSuccessListener { documentReference ->
+                // Após adicionar, buscamos o documento para retornar os dados (incluindo o id se necessário)
+                documentReference.get()
+                    .addOnSuccessListener { document ->
+                        val usuarioAdicionado = document.toObject<Usuario>()
+                        callback(usuarioAdicionado)
+                    }
+                    .addOnFailureListener {
+                        callback(null)
+                    }
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
     }
-
 }
