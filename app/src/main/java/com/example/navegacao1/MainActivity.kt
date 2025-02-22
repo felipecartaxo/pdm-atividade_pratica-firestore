@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("Login") },
+                            title = { Text("App Firestore") },
                             Modifier.background(MaterialTheme.colorScheme.secondary)
                         )
                     },

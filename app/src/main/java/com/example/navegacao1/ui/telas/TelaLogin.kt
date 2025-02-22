@@ -33,12 +33,13 @@ val usuarioDAO: UsuarioDAO = UsuarioDAO()
 @Composable
 fun TelaLogin(
     modifier: Modifier = Modifier,
-    onSigninClick: () -> Unit,
+    onSigninClick: () -> Unit, // Callback para navegação para TelaPrincipal
     onCadastroClick: () -> Unit  // Callback para navegação para TelaCadastro
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
+    // Armazenando o login e senha ao digitar
     var login by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var mensagemErro by remember { mutableStateOf<String?>(null) }
@@ -47,6 +48,8 @@ fun TelaLogin(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth().padding(16.dp)
     ) {
+        Text(text = "Login")
+        Spacer(modifier = Modifier.height(10.dp))
         OutlinedTextField(
             value = login,
             onValueChange = { login = it },
@@ -62,7 +65,8 @@ fun TelaLogin(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(10.dp))
-        // Row para posicionar os botões lado a lado
+
+        // Posicionando os botões lado a lado
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
