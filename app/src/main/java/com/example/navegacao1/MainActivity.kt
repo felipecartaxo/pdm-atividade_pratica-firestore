@@ -58,7 +58,8 @@ class MainActivity : ComponentActivity() {
                         composable("cadastro") {
                             TelaCadastro(
                                 modifier = Modifier.padding(innerPadding),
-                                onCadastroSuccess = { navController.navigate("login") }
+                                onCadastroSuccess = { navController.navigate("login") },
+                                onCancelar = { navController.navigate("login") }
                             )
                         }
                     }
