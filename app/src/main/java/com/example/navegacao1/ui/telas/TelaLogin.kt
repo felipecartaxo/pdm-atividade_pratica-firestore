@@ -1,10 +1,14 @@
 package com.example.navegacao1.ui.telas
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -27,38 +31,74 @@ import kotlinx.coroutines.launch
 val usuarioDAO: UsuarioDAO = UsuarioDAO()
 
 @Composable
-fun TelaLogin(modifier: Modifier = Modifier, onSigninClick: () -> Unit ) {
+fun TelaLogin(
+    modifier: Modifier = Modifier,
+    onSigninClick: () -> Unit,
+    onCadastroClick: () -> Unit  // Callback para navegação para TelaCadastro
+) {
     val context = LocalContext.current
-    var scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
-    var login by remember {mutableStateOf("")}
-    var senha by remember {mutableStateOf("")}
+    var login by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
     var mensagemErro by remember { mutableStateOf<String?>(null) }
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.fillMaxWidth()) {
-        OutlinedTextField(value = login, onValueChange = {login = it}, label = { Text(text = "Login")})
-        Spacer(modifier =  Modifier.height(10.dp))
-        OutlinedTextField(value = senha, visualTransformation = PasswordVisualTransformation(),
-            onValueChange = {senha = it}, label = { Text(text = "Senha")})
-        Button(modifier = Modifier.fillMaxWidth(), onClick = {
-            scope.launch(Dispatchers.IO) {
-                usuarioDAO.buscarPorNome(login, callback = { usuario ->
-                    if (usuario != null && usuario.senha == senha) {
-                        onSigninClick()
-                    } else {
-                        mensagemErro = "Login ou senha inválidos!"
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxWidth().padding(16.dp)
+    ) {
+        OutlinedTextField(
+            value = login,
+            onValueChange = { login = it },
+            label = { Text(text = "Login") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        OutlinedTextField(
+            value = senha,
+            visualTransformation = PasswordVisualTransformation(),
+            onValueChange = { senha = it },
+            label = { Text(text = "Senha") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        // Row para posicionar os botões lado a lado
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    scope.launch(Dispatchers.IO) {
+                        usuarioDAO.buscarPorNome(login, callback = { usuario ->
+                            if (usuario != null && usuario.senha == senha) {
+                                onSigninClick()
+                            } else {
+                                mensagemErro = "Login ou senha inválidos!"
+                            }
+                        })
                     }
-                })
+                }
+            ) {
+                Text("Entrar")
             }
-        }) {
-            Text("Entrar")
+            Spacer(modifier = Modifier.height(0.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = { onCadastroClick() }
+            ) {
+                Text("Cadastrar")
+            }
         }
 
-        mensagemErro?.let {
-            LaunchedEffect(it) {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        mensagemErro?.let { erro ->
+            LaunchedEffect(erro) {
+                Toast.makeText(context, erro, Toast.LENGTH_SHORT).show()
                 mensagemErro = null
             }
         }
     }
-
 }
